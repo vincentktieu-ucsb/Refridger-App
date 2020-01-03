@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, FlatList} from 'react-native';
-let list = ['Apple', 'Orange', 'Pears', 'Bananas', 'Rice', 'Chicken', 'Watermelon', 'Pho', 'Chow Mein', 'Beef'];
-let listIndex = 9;
-
-function addListElement (item) {
-  listIndex++;
-  list[listIndex] = item;
-}
 
 const styles = StyleSheet.create({
 
@@ -29,10 +22,49 @@ const styles = StyleSheet.create({
   },
 });
 
+function removeLast(list) {
+  list.pop();
+  return list;
+}
+
+function sortByName(list) {
+  let temp;
+
+  if (list.length == 0) {
+    return list;
+  }
+
+  for (let i=list.length-1; i > 0; i--) {
+    for (let j=0; j < i; j++) {
+      if (list[j] > list[j+1]) {
+        temp = list[j];
+        list[j] = list[j+1];
+        list[j+1] = temp;
+      }
+    }
+  }
+  return list;
+}
+
 export default class FlexDirectionBasics extends Component {
-  _onPressButton() {
-    alert('You added Corn!'+listIndex);
-    addListElement('Corn');
+  constructor(props) {
+    super(props);
+    this.state = { 
+      listIndex:9, 
+      list: ['Apple', 'Orange', 'Pears', 'Bananas', 'Rice', 'Chicken', 'Watermelon', 'Pho', 'Chow Mein', 'Beef', 'Corn'],
+    }
+  }
+
+  _onPressButtonPlus() {
+    this.setState({
+      list: this.state.list.concat('Corn')
+    })
+  }
+
+  _onPressButtonMinus() {
+    this.setState({
+      list: removeLast(this.state.list)
+    })
   }
   
   render() {
@@ -53,7 +85,7 @@ export default class FlexDirectionBasics extends Component {
           }}>
             
             <TouchableWithoutFeedback style={styles.titleWhite
-        } onPress={this._onPressButton}>
+        } onPress={this._onPressButtonPlus.bind(this)}>
               <Text style={styles.titleWhite
           }>+</Text> 
             </TouchableWithoutFeedback>
@@ -62,7 +94,7 @@ export default class FlexDirectionBasics extends Component {
         }>refridger</Text>
 
             <TouchableWithoutFeedback style={styles.titleWhite
-        } onPress={this._onPressButton}>
+        } onPress={this._onPressButtonMinus.bind(this)}>
               <Text style={styles.titleWhite
           }>---</Text>
             </TouchableWithoutFeedback>
@@ -75,7 +107,7 @@ export default class FlexDirectionBasics extends Component {
         }}>
           <View style={{marginLeft: 30, marginTop: 20,}}>
             <FlatList
-              data = {list}
+              data = {this.state.list}
               renderItem={({item}) => <Text style={styles.listItemWhite}>{item}</Text>}
             />
           </View>
