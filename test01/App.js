@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, FlatList} from 'react-native';
-let list = ['', 'Apple', 'Orange', 'Pears', 'Bananas', 'Rice', 'Chicken', 'Watermelon', 'Pho', 'Chow Mein', 'Beef', ''];
+let list = ['Apple', 'Orange', 'Pears', 'Bananas', 'Rice', 'Chicken', 'Watermelon', 'Pho', 'Chow Mein', 'Beef'];
+let listIndex = 9;
+
+function addListElement (item) {
+  listIndex++;
+  list[listIndex] = item;
+}
+
 const styles = StyleSheet.create({
 
   titleWhite: {
@@ -20,12 +27,12 @@ const styles = StyleSheet.create({
     paddingLeft:10, 
     paddingRight:10,
   },
-
 });
 
 export default class FlexDirectionBasics extends Component {
   _onPressButton() {
-    alert('You tapped the button!')
+    alert('You added Corn!'+listIndex);
+    addListElement('Corn');
   }
   
   render() {
@@ -34,7 +41,7 @@ export default class FlexDirectionBasics extends Component {
         flex: 1,
       }}>
         <View style={{
-          height: 100, 
+          height: 85, 
           backgroundColor: 'powderblue',
           marginBottom: 3,
         }}>
@@ -66,32 +73,10 @@ export default class FlexDirectionBasics extends Component {
           flex: 1, 
           backgroundColor: 'skyblue',
         }}>
-          <View style={{marginLeft: 30, marginTop: 0,}}>
+          <View style={{marginLeft: 30, marginTop: 20,}}>
             <FlatList
-              data={[
-                {key: ' '},
-                {key: 'Apples'},
-                {key: 'Oranges'},
-                {key: 'Pears'},
-                {key: 'Bananas'},
-                {key: 'Rice'},
-                {key: 'Chicken'},
-                {key: 'Watermelon'},
-                {key: 'Pho'},
-                {key: 'Chow Mein'},
-                {key: 'Beef'},
-                {key: ' '},
-                {key: ' '},
-                {key: ' '},
-                {key: ' '},
-                {key: ' '},
-                {key: ' '},
-                {key: ' '},
-                {key: ' '},
-
-              ]}
-              renderItem= {({item}) => <Text style={styles.listItemWhite
-          }>{item.key}</Text>}
+              data = {list}
+              renderItem={({item}) => <Text style={styles.listItemWhite}>{item}</Text>}
             />
           </View>
         </View>
