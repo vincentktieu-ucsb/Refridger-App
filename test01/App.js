@@ -1,28 +1,38 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, FlatList} from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, FlatList} from 'react-native';
 
 const styles = StyleSheet.create({
 
-  titleWhite: {
+  titleFont: {
     color: 'white',
     fontSize: 35,
     fontFamily: 'Futura-MediumItalic',
+    marginTop: 5,
     marginBottom: 5, 
     paddingLeft:10, 
     paddingRight:10,
   },
 
-  listItemWhite: {
+  bodyFont: {
     color: 'white',
-    fontSize: 25,
+    fontSize: 26,
     fontFamily: 'Avenir',
     marginBottom: 3, 
-    paddingLeft:10, 
-    paddingRight:10,
+    paddingLeft: 10, 
+    paddingRight: 10,
   },
+
 });
 
-function removeLast(list) {
+function addToList(list, text) {
+  if (text == "") {
+    return list;
+  } else {
+    list=list.concat(text);
+    return list;
+  }
+}
+function popList(list) {
   list.pop();
   return list;
 }
@@ -46,24 +56,36 @@ function sortByName(list) {
   return list;
 }
 
-export default class FlexDirectionBasics extends Component {
+export default class main extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      listIndex:9, 
       list: ['Apple', 'Orange', 'Pears', 'Bananas', 'Rice', 'Chicken', 'Watermelon', 'Pho', 'Chow Mein', 'Beef', 'Corn'],
+      text: '',
+      barHeight: 0,
+      barMargin: 0,
     }
   }
 
   _onPressButtonPlus() {
     this.setState({
-      list: this.state.list.concat('Corn')
+      barHeight: 50,
+      barMargin: 3,
     })
   }
 
   _onPressButtonMinus() {
     this.setState({
-      list: removeLast(this.state.list)
+      list: popList(this.state.list),
+    })
+  }
+
+  _onPressButtonDone() {
+    this.setState({
+      list: addToList(this.state.list, this.state.text),
+      barHeight: 0,
+      barMargin: 0,
+      text: '',
     })
   }
   
@@ -84,31 +106,64 @@ export default class FlexDirectionBasics extends Component {
             alignItems: 'flex-end',
           }}>
             
-            <TouchableWithoutFeedback style={styles.titleWhite
-        } onPress={this._onPressButtonPlus.bind(this)}>
-              <Text style={styles.titleWhite
-          }>+</Text> 
+            <TouchableWithoutFeedback onPress={this._onPressButtonPlus.bind(this)}>
+              <Text style={styles.titleFont}>+</Text> 
             </TouchableWithoutFeedback>
 
-            <Text style={styles.titleWhite
-        }>refridger</Text>
+            <Text style={styles.titleFont}>refridger</Text>
 
-            <TouchableWithoutFeedback style={styles.titleWhite
-        } onPress={this._onPressButtonMinus.bind(this)}>
-              <Text style={styles.titleWhite
-          }>---</Text>
+            <TouchableWithoutFeedback onPress={this._onPressButtonMinus.bind(this)}>
+              <Text style={styles.titleFont}>---</Text>
             </TouchableWithoutFeedback>
           </View>
+        </View>
+
+        <View style={{
+          height: this.state.barHeight,
+          marginBottom: this.state.barMargin,
+          backgroundColor: 'steelblue',
+          justifyContent: 'center',
+        }}>
+        
+          <View style={{flexDirection: 'row', justifyContent: 'space-between',}}>
+            <TextInput
+              style={styles.bodyFont}
+              placeholder="Tap to type item...      "
+              placeholderTextColor='white'
+              onChangeText={(text) => this.setState({text})}
+              value={this.state.text}
+            />
+
+              <TouchableWithoutFeedback onPress={this._onPressButtonDone.bind(this)}>
+                <Text style={styles.bodyFont}>Done</Text>
+              </TouchableWithoutFeedback>
+
+          </View>
+
         </View>
 
         <View style={{
           flex: 1, 
           backgroundColor: 'skyblue',
         }}>
-          <View style={{marginLeft: 30, marginTop: 20,}}>
+          <View style={{ 
+            marginLeft: 20,
+            marginRight: 20,
+            marginTop: 20,
+            flex: 1,
+          }}>
             <FlatList
               data = {this.state.list}
-              renderItem={({item}) => <Text style={styles.listItemWhite}>{item}</Text>}
+              renderItem={({item}) =>  
+                // <TouchableWithoutFeedback><Text>Tests</Text>></TouchableWithoutFeedback>>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', borderWidth: 3, borderRadius: 15, borderStyle: 'solid', borderColor: 'white', backgroundColor: 'babyblue', marginBottom: 8}}>
+                  <Text style={styles.bodyFont}>{item}</Text>
+                  <TouchableWithoutFeedback style={styles.titleFont} onPress={this._onPressButtonDone.bind(this)}>
+                    <Text style={styles.bodyFont}>></Text>
+                  </TouchableWithoutFeedback>
+                </View>
+                
+              }
             />
           </View>
         </View>
