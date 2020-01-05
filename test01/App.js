@@ -15,8 +15,10 @@ const styles = StyleSheet.create({
 
   bodyFont: {
     color: 'white',
-    fontSize: 26,
+    fontSize: 18,
+    fontWeight: '800',
     fontFamily: 'Avenir',
+    marginTop: 3,
     marginBottom: 3, 
     paddingLeft: 10, 
     paddingRight: 10,
@@ -24,53 +26,152 @@ const styles = StyleSheet.create({
 
 });
 
+function displayController(bool) {
+  if (bool) {
+    return {};
+  } else {
+    return {
+      height: 0, 
+      borderWidth: 0, 
+      marginBottom: 0, 
+      borderTopWidth: 0
+    };
+  }
+}
+
 function addToList(list, text) {
   if (text == "") {
     return list;
   } else {
-    list=list.concat(text);
+    list=list.concat({name: text});
+    alert('item added');
     return list;
   }
 }
+
 function popList(list) {
   list.pop();
+  alert('item deleted!')
   return list;
 }
 
-function sortByName(list) {
-  let temp;
-
-  if (list.length == 0) {
-    return list;
+function cancelOrDone(string) {
+  if (string == '') {
+    return 'Cancel';
   }
-
-  for (let i=list.length-1; i > 0; i--) {
-    for (let j=0; j < i; j++) {
-      if (list[j] > list[j+1]) {
-        temp = list[j];
-        list[j] = list[j+1];
-        list[j+1] = temp;
-      }
-    }
-  }
-  return list;
+  return 'Done';
 }
+
+// function sortByName(list) {
+//   let temp;
+
+//   if (list.length == 0) {
+//     return list;
+//   }
+
+//   for (let i=list.length-1; i > 0; i--) {
+//     for (let j=0; j < i; j++) {
+//       if (list[j] > list[j+1]) {
+//         temp = list[j];
+//         list[j] = list[j+1];
+//         list[j+1] = temp;
+//       }
+//     }
+//   }
+//   return list;
+// }
 
 export default class main extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      list: ['Apple', 'Orange', 'Pears', 'Bananas', 'Rice', 'Chicken', 'Watermelon', 'Pho', 'Chow Mein', 'Beef', 'Corn'],
-      text: '',
-      barHeight: 0,
-      barMargin: 0,
+      list: [
+        {
+          name: 'Apples', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Burgers', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Jumbalaya', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Ice Cream', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Rice', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Chicken', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Watermelon', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Pho', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Chow Mein', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Beef', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+        {
+          name: 'Corn', 
+          infoVisible: false,
+          dateAdded: 'Today',
+          dateExpired: 'Tommorrow',
+          owner: 'Me',
+        },
+      ],
+      addBarVisible: false,
+      addName: '',
     }
   }
 
   _onPressButtonPlus() {
     this.setState({
-      barHeight: 50,
-      barMargin: 3,
+      addBarVisible: true,
     })
   }
 
@@ -83,12 +184,20 @@ export default class main extends Component {
   _onPressButtonDone() {
     this.setState({
       list: addToList(this.state.list, this.state.text),
-      barHeight: 0,
-      barMargin: 0,
       text: '',
+      addBarVisible: false,
     })
   }
   
+  _onPressButtonInfo(item) {
+    this.setState(prevState => ({
+      list: prevState.list.map(
+        el => el.name == item.name? 
+          { ...el, infoVisible: !item.infoVisible}: el
+        )
+    }))
+  }
+
   render() {
     return (
       <View style={{
@@ -106,36 +215,41 @@ export default class main extends Component {
             alignItems: 'flex-end',
           }}>
             
-            <TouchableWithoutFeedback onPress={this._onPressButtonPlus.bind(this)}>
+            <TouchableWithoutFeedback onPress={() => this._onPressButtonPlus()}>
               <Text style={styles.titleFont}>+</Text> 
             </TouchableWithoutFeedback>
 
             <Text style={styles.titleFont}>refridger</Text>
 
-            <TouchableWithoutFeedback onPress={this._onPressButtonMinus.bind(this)}>
+            <TouchableWithoutFeedback onPress={() => this._onPressButtonMinus()}>
               <Text style={styles.titleFont}>---</Text>
             </TouchableWithoutFeedback>
           </View>
         </View>
 
-        <View style={{
-          height: this.state.barHeight,
-          marginBottom: this.state.barMargin,
+        <View style={[{
+          height: 50,
+          marginBottom: 3,
           backgroundColor: 'steelblue',
           justifyContent: 'center',
-        }}>
+        },displayController(this.state.addBarVisible)]}>
         
-          <View style={{flexDirection: 'row', justifyContent: 'space-between',}}>
+          <View style={
+            {flexDirection: 'row', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+            <View style={{flexDirection: 'column'}}>
             <TextInput
               style={styles.bodyFont}
-              placeholder="Tap to type item...      "
+              placeholder="Name...      "
               placeholderTextColor='white'
               onChangeText={(text) => this.setState({text})}
               value={this.state.text}
             />
-
-              <TouchableWithoutFeedback onPress={this._onPressButtonDone.bind(this)}>
-                <Text style={styles.bodyFont}>Done</Text>
+            </View>
+              <TouchableWithoutFeedback onPress={() => this._onPressButtonDone()}>
+                <Text style={styles.bodyFont}>{cancelOrDone(this.state.text)}</Text>
               </TouchableWithoutFeedback>
 
           </View>
@@ -155,14 +269,35 @@ export default class main extends Component {
             <FlatList
               data = {this.state.list}
               renderItem={({item}) =>  
-                // <TouchableWithoutFeedback><Text>Tests</Text>></TouchableWithoutFeedback>>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', borderWidth: 3, borderRadius: 15, borderStyle: 'solid', borderColor: 'white', backgroundColor: 'babyblue', marginBottom: 8}}>
-                  <Text style={styles.bodyFont}>{item}</Text>
-                  <TouchableWithoutFeedback style={styles.titleFont} onPress={this._onPressButtonDone.bind(this)}>
-                    <Text style={styles.bodyFont}>></Text>
-                  </TouchableWithoutFeedback>
+                <View style={{
+                  borderWidth: 1.8, 
+                  borderRadius: 15, 
+                  borderStyle: 'solid', 
+                  borderColor: 'white', 
+                  backgroundColor: 'skyblue', 
+                  marginBottom: 10,
+                }}>  
+                  <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between', 
+                    alignItems : 'center',
+
+                  }}>
+                    <Text style={styles.bodyFont}>{item.name}</Text>
+                    <TouchableWithoutFeedback style={styles.titleFont} onPress={() => this._onPressButtonInfo(item)}>
+                      <Text style={[styles.bodyFont,{fontSize: 28, marginTop: 0, marginBottom: 0}]}>></Text>
+                    </TouchableWithoutFeedback>
+                  </View>
+
+                  <View style={[{
+                    borderTopWidth: 2,
+                    borderTopColor: 'white',
+                  }, displayController(item.infoVisible)]}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', }}><Text style={styles.bodyFont}>Date Added: </Text><Text style={styles.bodyFont}>{item.dateAdded}</Text></View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', }}><Text style={styles.bodyFont}>Date Expired: </Text><Text style={styles.bodyFont}>{item.dateExpired}</Text></View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', }}><Text style={styles.bodyFont}>Owner: </Text><Text style={styles.bodyFont}>{item.owner}</Text></View>  
+                  </View>
                 </View>
-                
               }
             />
           </View>
