@@ -192,8 +192,8 @@ export default class main extends Component {
 
   _onPressButtonPlus() {
     // Controls up or down add item view
-    addBarVisible: !this.state.addBarVisible,
-      this.setState({
+    this.setState({
+      addBarVisible: !this.state.addBarVisible,
       addName: '',
       addDateAdded: '',
       addDateExpired: '',
