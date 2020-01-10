@@ -1,8 +1,38 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, FlatList} from 'react-native';
+import React, { Component } from 'react'; // Import ReactJS
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, FlatList, Keyboard} from 'react-native'; // import from ReactNative, which is different from ReactJS
+// import Firebase from 'firebase'; // Requires $ yarn add firebase
+
+// var config = {
+//   apiKey: "AIzaSyAY1ilFFwcj_jiBtjUxWbGPXV0GtUzCBho",
+//   authDomain: "refridger-de716.firebaseapp.com",
+//   databaseURL: "https://refridger-de716.firebaseio.com",
+//   projectId: "refridger-de716",
+//   storageBucket: "refridger-de716.appspot.com",
+//   messagingSenderId: "924699544943",
+//   appId: "1:924699544943:web:9154d2f8b03d228a83ec9a",
+//   measurementId: "G-JDM1CX0BLL"
+// };
+
+
+// if (!Firebase.apps.length) {
+//   Firebase.initializeApp(config);
+// }
+
+// let app = Firebase.app();
+// const db = app.database();
+
+// let addItem = item => {
+//   db.ref('/items').push({
+//     name: item, 
+//     infoVisible: false,
+//     dateAdded: 'Today',
+//     dateExpired: 'Tommorrow',
+//     owner: 'Me',
+//   });
+// };
 
 const styles = StyleSheet.create({
-
+  // Fonts
   titleFont: {
     color: 'white',
     fontSize: 35,
@@ -23,10 +53,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10, 
     paddingRight: 10,
   },
-
 });
 
 function displayController(bool) {
+  // Overloads the height of a "view" tag's height to 0 
   if (bool) {
     return {};
   } else {
@@ -34,52 +64,40 @@ function displayController(bool) {
       height: 0, 
       borderWidth: 0, 
       marginBottom: 0, 
-      borderTopWidth: 0
+      borderTopWidth: 0,
     };
   }
 }
 
-function addToList(list, text) {
-  if (text == "") {
-    return list;
-  } else {
-    list=list.concat({name: text});
-    alert('item added');
+function addToList(list, addName, addDateAdded, addDateExpired, addItemOwner) {
+  // Adds item
+  if (addName == '') {
+    alert('Item Canceled!');
     return list;
   }
+  list=list.concat({
+    name: addName,
+    dateAdded: addDateAdded,
+    dateExpired: addDateExpired,
+    itemOwner: addItemOwner, 
+  });
+  return list;
 }
 
 function popList(list) {
+  // Pops from list
   list.pop();
-  alert('item deleted!')
+  alert('Item Deleted!')
   return list;
 }
 
 function cancelOrDone(string) {
+  // Returns 'Done' if string isn't empty
   if (string == '') {
     return 'Cancel';
   }
   return 'Done';
 }
-
-// function sortByName(list) {
-//   let temp;
-
-//   if (list.length == 0) {
-//     return list;
-//   }
-
-//   for (let i=list.length-1; i > 0; i--) {
-//     for (let j=0; j < i; j++) {
-//       if (list[j] > list[j+1]) {
-//         temp = list[j];
-//         list[j] = list[j+1];
-//         list[j+1] = temp;
-//       }
-//     }
-//   }
-//   return list;
-// }
 
 export default class main extends Component {
   constructor(props) {
@@ -91,105 +109,119 @@ export default class main extends Component {
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Burgers', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Jumbalaya', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Ice Cream', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Rice', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Chicken', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Watermelon', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Pho', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Chow Mein', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Beef', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
         {
           name: 'Corn', 
           infoVisible: false,
           dateAdded: 'Today',
           dateExpired: 'Tommorrow',
-          owner: 'Me',
+          itemOwner: 'Me',
         },
       ],
       addBarVisible: false,
       addName: '',
+      addDateAdded: '',
+      addDateExpired: '',
+      addItemOwner: '',
     }
   }
 
   _onPressButtonPlus() {
-    this.setState({
-      addBarVisible: true,
+    // Controls up or down add item view
+    addBarVisible: !this.state.addBarVisible,
+      this.setState({
+      addName: '',
+      addDateAdded: '',
+      addDateExpired: '',
+      addItemOwner: '',
     })
   }
 
   _onPressButtonMinus() {
+    // Deletes last item
     this.setState({
       list: popList(this.state.list),
     })
   }
 
   _onPressButtonDone() {
+    // Controls up or down add item view. Also adds items
     this.setState({
-      list: addToList(this.state.list, this.state.text),
-      text: '',
+      list: addToList(this.state.list, this.state.addName, this.state.addDateAdded, this.state.addDateExpired, this.state.addItemOwner),
       addBarVisible: false,
+      addName: '',
+      addDateAdded: '',
+      addDateExpired: '',
+      addItemOwner: '',
     })
   }
   
   _onPressButtonInfo(item) {
+    // Controls info view for each item
     this.setState(prevState => ({
       list: prevState.list.map(
         el => el.name == item.name? 
@@ -201,9 +233,11 @@ export default class main extends Component {
   render() {
     return (
       <View style={{
+        // Main List View
         flex: 1,
       }}>
         <View style={{
+          // Title Section
           height: 85, 
           backgroundColor: 'powderblue',
           marginBottom: 3,
@@ -215,7 +249,7 @@ export default class main extends Component {
             alignItems: 'flex-end',
           }}>
             
-            <TouchableWithoutFeedback onPress={() => this._onPressButtonPlus()}>
+            <TouchableWithoutFeedback onPress={() => this._onPressButtonPlus()} onPressIn={Keyboard.dismiss}>
               <Text style={styles.titleFont}>+</Text> 
             </TouchableWithoutFeedback>
 
@@ -228,28 +262,55 @@ export default class main extends Component {
         </View>
 
         <View style={[{
-          height: 50,
+          // Add item View Section
           marginBottom: 3,
           backgroundColor: 'steelblue',
           justifyContent: 'center',
         },displayController(this.state.addBarVisible)]}>
         
-          <View style={
-            {flexDirection: 'row', 
+          <View style={{
+            flexDirection: 'row', 
             justifyContent: 'space-between',
             alignItems: 'center',
+            marginTop: 10,
+            marginBottom: 10,
           }}>
             <View style={{flexDirection: 'column'}}>
             <TextInput
               style={styles.bodyFont}
-              placeholder="Name...      "
+              placeholder="New Item Name...      "
               placeholderTextColor='white'
-              onChangeText={(text) => this.setState({text})}
-              value={this.state.text}
+              onChangeText={(addName) => this.setState({addName})}
+              value={this.state.addName}
+              onSubmitEditing={Keyboard.dismiss}
+            />
+            <TextInput
+              style={styles.bodyFont}
+              placeholder="Date Added... (Optional)      "
+              placeholderTextColor='white'
+              onChangeText={(addDateAdded) => this.setState({addDateAdded})}
+              value={this.state.addDateAdded}
+              onSubmitEditing={Keyboard.dismiss}
+            />
+            <TextInput
+              style={styles.bodyFont}
+              placeholder="Date Expired... (Optional)      "
+              placeholderTextColor='white'
+              onChangeText={(addDateExpired) => this.setState({addDateExpired})}
+              value={this.state.addDateExpired}
+              onSubmitEditing={Keyboard.dismiss}
+            />
+            <TextInput
+              style={styles.bodyFont}
+              placeholder="Item Owner... (Optional)      "
+              placeholderTextColor='white'
+              onChangeText={(addItemOwner) => this.setState({addItemOwner})}
+              value={this.state.addItemOwner}
+              onSubmitEditing={Keyboard.dismiss}
             />
             </View>
-              <TouchableWithoutFeedback onPress={() => this._onPressButtonDone()}>
-                <Text style={styles.bodyFont}>{cancelOrDone(this.state.text)}</Text>
+              <TouchableWithoutFeedback onPress={() => this._onPressButtonDone()} onPressIn={Keyboard.dismiss}>
+                <Text style={styles.bodyFont}>{cancelOrDone(this.state.addName)}</Text>
               </TouchableWithoutFeedback>
 
           </View>
@@ -257,6 +318,7 @@ export default class main extends Component {
         </View>
 
         <View style={{
+          // List Section
           flex: 1, 
           backgroundColor: 'skyblue',
         }}>
@@ -293,9 +355,10 @@ export default class main extends Component {
                     borderTopWidth: 2,
                     borderTopColor: 'white',
                   }, displayController(item.infoVisible)]}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', }}><Text style={styles.bodyFont}>Date Added: </Text><Text style={styles.bodyFont}>{item.dateAdded}</Text></View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', }}><Text style={styles.bodyFont}>Date Expired: </Text><Text style={styles.bodyFont}>{item.dateExpired}</Text></View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', }}><Text style={styles.bodyFont}>Owner: </Text><Text style={styles.bodyFont}>{item.owner}</Text></View>  
+                    <View style={[{flexDirection: 'row', justifyContent: 'space-between', }, displayController(item.dateAdded != '')]}><Text style={styles.bodyFont}>Date Added: </Text><Text style={styles.bodyFont}>{item.dateAdded}</Text></View>
+                    <View style={[{flexDirection: 'row', justifyContent: 'space-between', }, displayController(item.dateExpired != '')]}><Text style={styles.bodyFont}>Date Expired: </Text><Text style={styles.bodyFont}>{item.dateExpired}</Text></View>
+                    <View style={[{flexDirection: 'row', justifyContent: 'space-between', }, displayController(item.itemOwner != '')]}><Text style={styles.bodyFont}>Item Owner: </Text><Text style={styles.bodyFont}>{item.itemOwner}</Text></View>
+                    <View style={[{flexDirection: 'row', justifyContent: 'space-between', }, displayController(item.dateAdded == '' && item.dateExpired == '' && item.itemOwner == '')]}><Text style={styles.bodyFont}>No Additional Info Available :(</Text><Text style={styles.bodyFont}>{item.itemOwner}</Text></View>  
                   </View>
                 </View>
               }
