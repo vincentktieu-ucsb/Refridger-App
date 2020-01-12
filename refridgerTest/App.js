@@ -1,35 +1,6 @@
 import React, { Component } from 'react'; // Import ReactJS
-import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, FlatList, Keyboard} from 'react-native'; // import from ReactNative, which is different from ReactJS
-// import Firebase from 'firebase'; // Requires $ yarn add firebase
-
-// var config = {
-//   apiKey: "AIzaSyAY1ilFFwcj_jiBtjUxWbGPXV0GtUzCBho",
-//   authDomain: "refridger-de716.firebaseapp.com",
-//   databaseURL: "https://refridger-de716.firebaseio.com",
-//   projectId: "refridger-de716",
-//   storageBucket: "refridger-de716.appspot.com",
-//   messagingSenderId: "924699544943",
-//   appId: "1:924699544943:web:9154d2f8b03d228a83ec9a",
-//   measurementId: "G-JDM1CX0BLL"
-// };
-
-
-// if (!Firebase.apps.length) {
-//   Firebase.initializeApp(config);
-// }
-
-// let app = Firebase.app();
-// const db = app.database();
-
-// let addItem = item => {
-//   db.ref('/items').push({
-//     name: item, 
-//     infoVisible: false,
-//     dateAdded: 'Today',
-//     dateExpired: 'Tommorrow',
-//     owner: 'Me',
-//   });
-// };
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, FlatList, Keyboard, DatePickerIOS } from 'react-native'; // import from ReactNative, which is different from ReactJS
+import Firebase from 'firebase'; // Requires $ yarn add firebase
 
 const styles = StyleSheet.create({
   // Fonts
@@ -62,6 +33,7 @@ function displayController(bool) {
   } else {
     return {
       height: 0, 
+      width: 0,
       borderWidth: 0, 
       marginBottom: 0, 
       borderTopWidth: 0,
@@ -69,26 +41,64 @@ function displayController(bool) {
   }
 }
 
-function addToList(list, addName, addDateAdded, addDateExpired, addItemOwner) {
-  // Adds item
-  if (addName == '') {
-    alert('Item Canceled!');
-    return list;
-  }
-  list=list.concat({
-    name: addName,
+var config = {
+  apiKey: "AIzaSyAY1ilFFwcj_jiBtjUxWbGPXV0GtUzCBho",
+  authDomain: "refridger-de716.firebaseapp.com",
+  databaseURL: "https://refridger-de716.firebaseio.com",
+  projectId: "refridger-de716",
+  storageBucket: "refridger-de716.appspot.com",
+  messagingSenderId: "924699544943",
+  appId: "1:924699544943:web:9154d2f8b03d228a83ec9a",
+  measurementId: "G-JDM1CX0BLL"
+};
+
+
+if (!Firebase.apps.length) {
+  Firebase.initializeApp(config);
+}
+
+let app = Firebase.app();
+const db = app.database();
+
+let addItem = (addName, addDateAdded, addDateExpired, addOwner) => {
+  db.ref('/list').push({
+    infoVisible: false,
+    name: addName, 
     dateAdded: addDateAdded,
     dateExpired: addDateExpired,
-    itemOwner: addItemOwner, 
+    itemOwner: addOwner, 
+  });
+};
+
+function returnFirebaseList() {
+  let listRef = db.ref('list');
+  var list = [];
+  var item;
+  listRef.on('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        item = childSnapshot.val()
+        list.push(item);
+      });
   });
   return list;
 }
 
-function popList(list) {
-  // Pops from list
-  list.pop();
-  alert('Item Deleted!')
+function addToList(list, addName, addDateAdded, addDateExpired, addItemOwner) {
+  // Adds item
+  if (addName == '') {
+    return list;
+  }
+  addItem(addName, addDateAdded, addDateExpired, addItemOwner);
   return list;
+}
+
+function deleteFromList(list, item) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i] == item) {
+      list.splice(i,1);
+      return list;
+    }
+  }
 }
 
 function cancelOrDone(string) {
@@ -99,94 +109,20 @@ function cancelOrDone(string) {
   return 'Done';
 }
 
+// var d = new Date();
+// console.log(d.getTime());
+
 export default class main extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      list: [
-        {
-          name: 'Apples', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Burgers', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Jumbalaya', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Ice Cream', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Rice', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Chicken', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Watermelon', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Pho', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Chow Mein', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Beef', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-        {
-          name: 'Corn', 
-          infoVisible: false,
-          dateAdded: 'Today',
-          dateExpired: 'Tommorrow',
-          itemOwner: 'Me',
-        },
-      ],
+      list: returnFirebaseList(),
       addBarVisible: false,
       addName: '',
       addDateAdded: '',
       addDateExpired: '',
       addItemOwner: '',
+      deleteVisible: false,
     }
   }
 
@@ -198,14 +134,14 @@ export default class main extends Component {
       addDateAdded: '',
       addDateExpired: '',
       addItemOwner: '',
-    })
+      list: returnFirebaseList(),
+    });
   }
 
   _onPressButtonMinus() {
-    // Deletes last item
-    this.setState({
-      list: popList(this.state.list),
-    })
+    this.setState(prevState => ({
+      deleteVisible: !(this.state.deleteVisible),
+    }))
   }
 
   _onPressButtonDone() {
@@ -217,7 +153,7 @@ export default class main extends Component {
       addDateAdded: '',
       addDateExpired: '',
       addItemOwner: '',
-    })
+    });
   }
   
   _onPressButtonInfo(item) {
@@ -228,6 +164,20 @@ export default class main extends Component {
           { ...el, infoVisible: !item.infoVisible}: el
         )
     }))
+  }
+
+  _onPressButtonDelete(item) {
+    this.setState({
+      list: deleteFromList(this.state.list, item)
+    });
+    let listRef = db.ref('list');
+    listRef.on('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        if (childSnapshot.val().key === item.key) {
+          (db.ref('list/' + childSnapshot.key)).remove();
+        }
+      })
+    })
   }
 
   render() {
@@ -308,11 +258,11 @@ export default class main extends Component {
               value={this.state.addItemOwner}
               onSubmitEditing={Keyboard.dismiss}
             />
+            
             </View>
               <TouchableWithoutFeedback onPress={() => this._onPressButtonDone()} onPressIn={Keyboard.dismiss}>
                 <Text style={styles.bodyFont}>{cancelOrDone(this.state.addName)}</Text>
               </TouchableWithoutFeedback>
-
           </View>
 
         </View>
@@ -339,16 +289,23 @@ export default class main extends Component {
                   backgroundColor: 'skyblue', 
                   marginBottom: 10,
                 }}>  
-                  <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between', 
-                    alignItems : 'center',
-
-                  }}>
-                    <Text style={styles.bodyFont}>{item.name}</Text>
-                    <TouchableWithoutFeedback style={styles.titleFont} onPress={() => this._onPressButtonInfo(item)}>
-                      <Text style={[styles.bodyFont,{fontSize: 28, marginTop: 0, marginBottom: 0}]}>></Text>
-                    </TouchableWithoutFeedback>
+                  <View style={[styles.bodyFont, {flexDirection: 'row', alignItems: 'center', fontSize: 28, marginTop: 0, marginBottom: 0}]}>
+                    <View style={[{alignItems: 'center',}, displayController(this.state.deleteVisible)]}>
+                      <TouchableWithoutFeedback onPress={() => this._onPressButtonDelete(item)}>
+                        <Text style = {[styles.titleFont,{fontSize: 22, marginTop: 0, marginBottom: 0, color: 'steelblue'}]}>X</Text>
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View style={{
+                      flex: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between', 
+                      alignItems : 'center',
+                    }}>
+                      <Text style={styles.bodyFont}>{item.name}</Text>
+                      <TouchableWithoutFeedback style={styles.titleFont} onPress={() => this._onPressButtonInfo(item)}>
+                        <Text style={[styles.titleFont,{fontSize: 28, marginTop: 0, marginBottom: 0}]}>></Text>
+                      </TouchableWithoutFeedback>
+                    </View>
                   </View>
 
                   <View style={[{
