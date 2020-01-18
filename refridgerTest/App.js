@@ -60,16 +60,6 @@ if (!Firebase.apps.length) {
 let app = Firebase.app();
 const db = app.database();
 
-let addItem = (addName, addDateAdded, addDateExpired, addOwner) => {
-  db.ref('/list').push({
-    infoVisible: false,
-    name: addName, 
-    dateAdded: addDateAdded,
-    dateExpired: addDateExpired,
-    itemOwner: addOwner, 
-  });
-};
-
 function returnFirebaseList() {
   let listRef = db.ref('list');
   var list = [];
@@ -83,22 +73,23 @@ function returnFirebaseList() {
   return list;
 }
 
-function addToList(list, addName, addDateAdded, addDateExpired, addItemOwner) {
+function addItemToList(list, addName, addDateAdded, addDateExpired, addItemOwner) {
   // Adds item
+
   if (addName == '') {
     return list;
   }
-  addItem(addName, addDateAdded, addDateExpired, addItemOwner);
-  return list;
-}
+  
+  db.ref('/list').push({
+    infoVisible: false,
+    name: addName, 
+    dateAdded: addDateAdded,
+    dateExpired: addDateExpired,
+    itemOwner: addItemOwner, 
+    ID: generateID(),
+  });
 
-function deleteFromList(list, item) {
-  for (let i = 0; i < list.length; i++) {
-    if (list[i] == item) {
-      list.splice(i,1);
-      return list;
-    }
-  }
+  return list;
 }
 
 function cancelOrDone(string) {
@@ -109,8 +100,10 @@ function cancelOrDone(string) {
   return 'Done';
 }
 
-// var d = new Date();
-// console.log(d.getTime());
+function generateID() {
+  let d = new Date();
+  return d.getTime();
+}
 
 export default class main extends Component {
   constructor(props) {
@@ -146,8 +139,9 @@ export default class main extends Component {
 
   _onPressButtonDone() {
     // Controls up or down add item view. Also adds items
+    addItemToList(this.state.list, this.state.addName, this.state.addDateAdded, this.state.addDateExpired, this.state.addItemOwner);
     this.setState({
-      list: addToList(this.state.list, this.state.addName, this.state.addDateAdded, this.state.addDateExpired, this.state.addItemOwner),
+      list: returnFirebaseList(),
       addBarVisible: false,
       addName: '',
       addDateAdded: '',
@@ -167,17 +161,25 @@ export default class main extends Component {
   }
 
   _onPressButtonDelete(item) {
-    this.setState({
-      list: deleteFromList(this.state.list, item)
-    });
     let listRef = db.ref('list');
     listRef.on('value', function(snapshot) {
       snapshot.forEach(function(childSnapshot) {
-        if (childSnapshot.val().key === item.key) {
-          (db.ref('list/' + childSnapshot.key)).remove();
+        if (childSnapshot.val().ID === item.ID) {
+          // console.log("fname: " + childSnapshot.val().name);
+          db.ref('list/' + childSnapshot.key).remove();
         }
       })
     })
+
+    this.setState({
+      list: returnFirebaseList()
+    });
+  }
+
+  _onPressButtonReload() {
+    this.setState({
+      list: returnFirebaseList(),
+    });
   }
 
   render() {
@@ -318,9 +320,15 @@ export default class main extends Component {
                     <View style={[{flexDirection: 'row', justifyContent: 'space-between', }, displayController(item.dateAdded == '' && item.dateExpired == '' && item.itemOwner == '')]}><Text style={styles.bodyFont}>No Additional Info Available :(</Text><Text style={styles.bodyFont}>{item.itemOwner}</Text></View>  
                   </View>
                 </View>
-              }
-            />
+                }
+             />
           </View>
+        </View>
+
+        <View style={{height: 60, backgroundColor: 'powderblue', alignItems: 'center', marginTop: 3}}>
+          <TouchableWithoutFeedback style={styles.titleFont} onPress={() => this._onPressButtonReload()}>
+            <Text style={[styles.titleFont,{fontSize: 28, marginTop: 0, marginBottom: 0},  {marginTop: 5}]}>Reload!</Text>
+          </TouchableWithoutFeedback>
         </View>
       </View>
       
